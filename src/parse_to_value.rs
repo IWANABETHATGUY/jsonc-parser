@@ -2,7 +2,7 @@ use super::ast;
 use super::errors::ParseError;
 use super::value::*;
 use super::{parse_to_ast, ParseOptions};
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// Parses a string containing JSONC to a `JsonValue`.
 ///
@@ -43,7 +43,7 @@ fn handle_array(arr: ast::Array) -> JsonArray {
 }
 
 fn handle_object(obj: ast::Object) -> JsonObject {
-    let mut props = HashMap::new();
+    let mut props = BTreeMap::new();
     for prop in obj.properties.into_iter() {
         let prop_name = prop.name.into_string();
         let prop_value = handle_value(prop.value);
@@ -70,7 +70,7 @@ mod tests {
         .unwrap()
         .unwrap();
 
-        let mut object_map = HashMap::new();
+        let mut object_map = BTreeMap::new();
         object_map.insert(String::from("a"), JsonValue::Null);
         object_map.insert(
             String::from("b"),

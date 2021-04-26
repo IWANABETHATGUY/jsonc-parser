@@ -1,6 +1,6 @@
 use core::slice::Iter;
 use std::borrow::Cow;
-use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// A JSON value.
 #[derive(Clone, PartialEq, Debug)]
@@ -15,19 +15,19 @@ pub enum JsonValue<'a> {
 
 /// A JSON object.
 #[derive(Clone, PartialEq, Debug)]
-pub struct JsonObject<'a>(HashMap<String, JsonValue<'a>>);
+pub struct JsonObject<'a>(BTreeMap<String, JsonValue<'a>>);
 
 impl<'a> IntoIterator for JsonObject<'a> {
     type Item = (String, JsonValue<'a>);
-    type IntoIter = std::collections::hash_map::IntoIter<String, JsonValue<'a>>;
+    type IntoIter = std::collections::btree_map::IntoIter<String, JsonValue<'a>>;
 
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
 }
 
-impl<'a> From<HashMap<String, JsonValue<'a>>> for JsonObject<'a> {
-    fn from(properties: HashMap<String, JsonValue>) -> JsonObject {
+impl<'a> From<BTreeMap<String, JsonValue<'a>>> for JsonObject<'a> {
+    fn from(properties: BTreeMap<String, JsonValue>) -> JsonObject {
         JsonObject::new(properties)
     }
 }
@@ -57,12 +57,12 @@ macro_rules! generate_get {
 
 impl<'a> JsonObject<'a> {
     /// Creates a new JsonObject.
-    pub fn new(inner: HashMap<String, JsonValue<'a>>) -> JsonObject<'a> {
+    pub fn new(inner: BTreeMap<String, JsonValue<'a>>) -> JsonObject<'a> {
         JsonObject(inner)
     }
 
     /// Drops the object returning the inner hash map.
-    pub fn take_inner(self) -> HashMap<String, JsonValue<'a>> {
+    pub fn take_inner(self) -> BTreeMap<String, JsonValue<'a>> {
         self.0
     }
 
@@ -193,11 +193,11 @@ impl<'a> JsonArray<'a> {
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::collections::HashMap;
+    use std::collections::BTreeMap;
 
     #[test]
     fn it_should_take() {
-        let mut inner = HashMap::new();
+        let mut inner = BTreeMap::new();
         inner.insert(
             String::from("prop"),
             JsonValue::String(Cow::Borrowed("asdf")),
@@ -226,7 +226,7 @@ mod test {
 
     #[test]
     fn it_should_get() {
-        let mut inner = HashMap::new();
+        let mut inner = BTreeMap::new();
         inner.insert(
             String::from("prop"),
             JsonValue::String(Cow::Borrowed("asdf")),
